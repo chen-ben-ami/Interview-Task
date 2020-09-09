@@ -1,4 +1,4 @@
-package com.example.serviceLog.web;
+package com.example.serviceLog.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
