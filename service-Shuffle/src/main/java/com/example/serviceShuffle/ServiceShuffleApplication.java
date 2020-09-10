@@ -29,7 +29,7 @@ public class ServiceShuffleApplication {
 		executor.setCorePoolSize(2);
 		executor.setMaxPoolSize(2);
 		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("GithubLookup-");
+		executor.setThreadNamePrefix("LogRequest-");
 		executor.initialize();
 		return executor;
 	}

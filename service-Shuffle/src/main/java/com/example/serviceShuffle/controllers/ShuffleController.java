@@ -5,6 +5,7 @@ import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -21,9 +22,9 @@ public class ShuffleController {
     private final ShuffleService shuffleService;
 
     @HystrixCommand(fallbackMethod = "fallback")
-    @GetMapping("shuffle")
+    @PostMapping("shuffle")
     public String shuffle(@RequestParam int num) {
-        CompletableFuture<String> message = shuffleService.writeToLogService();
+        CompletableFuture<String> message = shuffleService.writeToLogService(num);
         CompletableFuture.allOf(message);
         return shuffleService.createAndShuffleList(num);
     }
@@ -31,5 +32,7 @@ public class ShuffleController {
     public String fallback(int num) {
         return num + " is not a valid number. Please pick a number between 1 to 1000";
     }
+
+
 
 }
