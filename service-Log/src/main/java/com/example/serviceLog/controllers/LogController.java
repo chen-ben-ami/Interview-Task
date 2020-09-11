@@ -12,10 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogController {
 
     @PostMapping("log")
-    public ResponseEntity<String> handleB(@RequestBody Log requestLog) throws InterruptedException {
+    public ResponseEntity<String> handleB(@RequestBody Log requestLog) {
         log.info("Shuffle array requested from micro-service Shuffle");
         log.info(requestLog.toString());
-        Thread.sleep(3000);
         return ResponseEntity.ok(requestLog.toString());
     }
 }

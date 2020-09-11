@@ -4,7 +4,9 @@ import com.example.serviceShuffle.beans.Log;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -20,20 +23,21 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ShuffleService {
 
     private final RestTemplate client;
-    @Value("com.cloud.hostname")
-    private final String HOSTNAME;
-    @Value("com.cloud.uri")
-    private final String URI;
+
+    @Value("${project.cloud.log.hostname}")
+    private String HOSTNAME;
+    @Value("${project.cloud.log.uri}")
+    private String URI;
 
     @Async
-    public CompletableFuture<String> writeToLogService(int input) {
+    public Future<String> writeToLogService(int input) {
         log.info("sending request to Log Service");
         Log log = new Log("Requested shuffle array method ", input, LocalDateTime.now());
-        String respond = client.postForObject("http://" + HOSTNAME + "/" + URI,log , String.class);
-        return CompletableFuture.completedFuture(respond);
+        String respond = client.postForObject("http://" + HOSTNAME + "/" + URI, log, String.class);
+        return new AsyncResult<String> (respond);
     }
 
-    public String createAndShuffleList(int input) {
+    public ResponseEntity<String> createAndShuffleList(int input) {
         if (input <= 1000 && input >= 1) {
             int[] result = new int[input];
             for (int i = 0; i < result.length; i++) {
@@ -46,7 +50,7 @@ public class ShuffleService {
                 result[index] = result[i];
                 result[i] = a;
             }
-            return Arrays.toString(result);
-        } else return "Please pick a number between 1 to 1000";
+            return ResponseEntity.ok(Arrays.toString(result));
+        } else return ResponseEntity.badRequest().body("Please pick a number between 1 to 1000");
     }
 }
