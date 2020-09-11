@@ -2,6 +2,7 @@ package com.example.serviceLog.controllers;
 
 import com.example.serviceLog.beans.Log;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogController {
 
     @PostMapping("log")
-    public String handleB(@RequestBody Log requestLog) {
+    public ResponseEntity<String> handleB(@RequestBody Log requestLog) throws InterruptedException {
         log.info("Shuffle array requested from micro-service Shuffle");
         log.info(requestLog.toString());
-        return requestLog.toString();
+        Thread.sleep(3000);
+        return ResponseEntity.ok(requestLog.toString());
     }
 }

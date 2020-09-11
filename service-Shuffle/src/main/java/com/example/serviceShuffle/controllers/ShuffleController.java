@@ -3,6 +3,7 @@ package com.example.serviceShuffle.controllers;
 import com.example.serviceShuffle.services.ShuffleService;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,16 +24,15 @@ public class ShuffleController {
 
     @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("shuffle")
-    public String shuffle(@RequestParam int num) {
+    public ResponseEntity<String> shuffle(@RequestParam int num) {
         CompletableFuture<String> message = shuffleService.writeToLogService(num);
         CompletableFuture.allOf(message);
-        return shuffleService.createAndShuffleList(num);
+        return ResponseEntity.ok(shuffleService.createAndShuffleList(num));
     }
 
-    public String fallback(int num) {
-        return num + " is not a valid number. Please pick a number between 1 to 1000";
+    public ResponseEntity<String> fallback(int num) {
+        return ResponseEntity.badRequest().body(num + "is not a valid number. Please pick a number between 1 to 1000\"");
     }
-
 
 
 }
