@@ -14,10 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,21 +22,16 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ShuffleController {
 
     private final ShuffleService shuffleService;
+    private final Executor executor;
 
     @HystrixCommand(fallbackMethod = "fallback")
     @PostMapping("shuffle")
     public ResponseEntity<String> shuffle(@RequestParam int num) throws ExecutionException, InterruptedException {
-        Future<String> future = shuffleService.writeToLogService(num);
-        while (true) {
-            if (future.isDone()) {
-                log.info("Request to log server was accepted....");
-                break;
-            }
-        }
+        CompletableFuture.runAsync(() -> shuffleService.writeToLogService(num));
+        log.info("Async call to log service that does not blocked by the I/O");
         return shuffleService.createAndShuffleList(num);
 
     }
-
     public ResponseEntity<String> fallback(int num) {
         return ResponseEntity.status(500).body("Something went wrong with Shuffle Service!");
     }

@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class FallbackController {
 	
-	@GetMapping("fallback/service-shuffle")
+	@GetMapping("fallback/service-Shuffle")
 	public ResponseEntity<String> shuffleServiceFallback(Throwable throwable) {
 		return ResponseEntity.status(500).body("Gateway : Shuffle Service is not available");
 	}
 	
-	@GetMapping("fallback/service-log")
+	@GetMapping("fallback/service-Log")
 	public ResponseEntity<String> logServiceFallback(Throwable throwable) {
 		return ResponseEntity.status(500).body("Gateway : Log Service is not available");
 	}

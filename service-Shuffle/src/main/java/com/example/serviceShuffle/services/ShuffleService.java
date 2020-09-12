@@ -6,15 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -30,11 +27,10 @@ public class ShuffleService {
     private String URI;
 
     @Async
-    public Future<String> writeToLogService(int input) {
+    public void writeToLogService(int input) {
         log.info("sending request to Log Service");
         Log log = new Log("Requested shuffle array method ", input, LocalDateTime.now());
-        String respond = client.postForObject("http://" + HOSTNAME + "/" + URI, log, String.class);
-        return new AsyncResult<String> (respond);
+        client.postForObject("http://" + HOSTNAME + "/" + URI, log, String.class);
     }
 
     public ResponseEntity<String> createAndShuffleList(int input) {
